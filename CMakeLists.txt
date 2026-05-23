@@ -59,7 +59,7 @@ UniGen/include/UEvent.hh;UniGen/include/UParticle.hh;UniGen/include/URun.hh;CUni
 CAAMCCWriter/CAAMCCWriter.hh;CRootModule.hh")
 
 set_target_properties(CRootWriter PROPERTIES 
-        PUBLIC_HEADER ${CRootWriter_PUBLIC_HEADER}
+        PUBLIC_HEADER "${CRootWriter_PUBLIC_HEADER}"
         CXX_CLANG_TIDY "${COLA_CMAKE_CXX_CLANG_TIDY}"
         INSTALL_RPATH_USE_LINK_PATH ON)
 
