@@ -30,7 +30,7 @@ namespace cola {
      std::unique_ptr<VFilter> Create(const std::unordered_map<std::string, std::string>& /*param_map*/) final;
 
      const std::string& GetFilterName() const override {
-       static const std::string name{"G4DeexcitationHandler"};
+       static const std::string name{"CRootWriter"};
        return name;
             }
     };
