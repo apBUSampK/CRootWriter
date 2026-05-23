@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -19,6 +19,8 @@
 */
 
 #include "CAAMCCWriter.hh"
+
+using namespace cola;
 
 CAAMCCWriter::CAAMCCWriter(const std::string& fName, const size_t buffSize, const bool writeCoord) : CRootWriter(fName, buffSize), writeCoord(writeCoord) {
     //data trees
@@ -65,39 +67,39 @@ CAAMCCWriter::CAAMCCWriter(const std::string& fName, const size_t buffSize, cons
     tRun->Branch("Xsect_NN", &runData.XsectNN,"Xsect_total/d");
     tRun->Branch("Kinetic_energy_per_nucleon_of_projectile_in_MeV", &runData.KinEnPerNucl,"Kinetic_energy_of_per_nucleon_projectile_in_MeV/d");
     tRun->Branch("SqrtS_nn_in_MeV", &runData.SqrtSnn,"SqrtS_nn_in_MeV/d");
-    tRun->Branch("pZ_in_MeV_on_A", &runData.pzA,"pZ_in_MeV_on_A/d");
-    tRun->Branch("pZ_in_MeV_on_B", &runData.pzB,"pZ_in_MeV_on_B/d");
+    tRun->Branch("pZ_in_MeV_on_A", &runData.pz_a,"pZ_in_MeV_on_A/d");
+    tRun->Branch("pZ_in_MeV_on_B", &runData.pz_b,"pZ_in_MeV_on_B/d");
     tRun->Branch("Mass_on_A", &runData.AinitA,"Mass_on_A/I");
     tRun->Branch("Mass_on_B", &runData.AinitB,"Mass_on_B/I");
     tRun->Branch("Charge_on_A", &runData.ZinitA,"Charge_on_A/I");
     tRun->Branch("Charge_on_B", &runData.ZinitB,"Charge_on_B/I");
 }
 
-void CAAMCCWriter::write_event(std::unique_ptr<cola::EventData>&& data) {
+void CAAMCCWriter::write_event(std::unique_ptr<EventData>&& data) {
     if (callflag) {
         
-        auto AZA = cola::pdgToAZ(data->iniState.pdgCodeA);
-        auto AZB = cola::pdgToAZ(data->iniState.pdgCodeB);
+        auto AZA = PdgToAZ(data->ini_state.pdg_code_a);
+        auto AZB = PdgToAZ(data->ini_state.pdg_code_b);
 
         runData.AinitA = AZA.first;
         runData.ZinitA = AZA.second;
         runData.AinitB = AZA.first;
         runData.ZinitB = AZA.second;
         
-        runData.isCollider = data->iniState.pZB != 0;
-        runData.pzA = data->iniState.pZA;
-        runData.pzB = data->iniState.pZB;
+        runData.isCollider = data->ini_state.pz_b != 0;
+        runData.pz_a = data->ini_state.pz_a;
+        runData.pz_b = data->ini_state.pz_b;
 
         if (runData.isCollider) {
-            runData.SqrtSnn = data->iniState.energy;
+            runData.SqrtSnn = data->ini_state.energy;
             runData.KinEnPerNucl = runData.SqrtSnn/2.0 - caamcc::nucleonAverMass;
         } else {
-            runData.KinEnPerNucl = data->iniState.energy;
+            runData.KinEnPerNucl = data->ini_state.energy;
             runData.SqrtSnn = pow(2*caamcc::nucleonAverMass*caamcc::nucleonAverMass +
                 2*runData.KinEnPerNucl*caamcc::nucleonAverMass, 0.5);
         }
 
-        runData.XsectNN = data->iniState.sectNN;
+        runData.XsectNN = data->ini_state.sect_nn;
 
         tRun->Fill();
         tRun->Write();
@@ -105,45 +107,45 @@ void CAAMCCWriter::write_event(std::unique_ptr<cola::EventData>&& data) {
     }
 
     event.id = count;
-    event.b = data->iniState.b;
-    event.Ncoll = data->iniState.nColl;
-    event.Ncollnn = data->iniState.nCollNN;
-    event.Ncollpn = data->iniState.nCollPN;
-    event.Ncollpp = data->iniState.nCollPP;
-    event.Npart = data->iniState.nPart;
-    event.NpartA = data->iniState.nPartA;
-    event.NpartB = data->iniState.nPartB;
+    event.b = data->ini_state.b;
+    event.Ncoll = data->ini_state.num_coll;
+    event.Ncollnn = data->ini_state.num_coll_nn;
+    event.Ncollpn = data->ini_state.num_coll_pn;
+    event.Ncollpp = data->ini_state.num_coll_pp;
+    event.Npart = data->ini_state.num_part;
+    event.NpartA = data->ini_state.num_part_a;
+    event.NpartB = data->ini_state.num_part_b;
 
-    event.PhiRotA = data->iniState.phiRotA;
-    event.ThetaRotA = data->iniState.thetaRotA;
-    event.PhiRotB = data->iniState.phiRotB;
-    event.ThetaRotB = data->iniState.thetaRotB;
+    event.PhiRotA = data->ini_state.phi_rot_a;
+    event.ThetaRotA = data->ini_state.theta_rot_a;
+    event.PhiRotB = data->ini_state.phi_rot_b;
+    event.ThetaRotB = data->ini_state.theta_rot_b;
 
     for (const auto& particle: data->particles) {
-        switch (particle.pClass)
+        switch (particle.p_class)
         {
-        case cola::ParticleClass::spectatorA:
-            event.MassOnSideA.push_back(static_cast<float>(particle.getAZ().first));
-            event.ChargeOnSideA.push_back(static_cast<float>(particle.getAZ().second));
+        case ParticleClass::kSpectatorA:
+            event.MassOnSideA.push_back(static_cast<float>(particle.GetAZ().first));
+            event.ChargeOnSideA.push_back(static_cast<float>(particle.GetAZ().second));
             if (writeCoord) {
                 event.pXonSideA.push_back(particle.momentum.x);
                 event.pYonSideA.push_back(particle.momentum.y);
                 event.pZonSideA.push_back(particle.momentum.z);
 
-                event.pseudorapidity_A.push_back(std::atanh(particle.momentum.z / particle.momentum.mag()));
+                event.pseudorapidity_A.push_back(std::atanh(particle.momentum.z / particle.momentum.Mag()));
             }
             break;
 
         
-        case cola::ParticleClass::spectatorB:
-            event.MassOnSideB.push_back(static_cast<float>(particle.getAZ().first));
-            event.ChargeOnSideB.push_back(static_cast<float>(particle.getAZ().second));
+        case ParticleClass::kSpectatorB:
+            event.MassOnSideB.push_back(static_cast<float>(particle.GetAZ().first));
+            event.ChargeOnSideB.push_back(static_cast<float>(particle.GetAZ().second));
             if (writeCoord) {
                 event.pXonSideB.push_back(particle.momentum.x);
                 event.pYonSideB.push_back(particle.momentum.y);
                 event.pZonSideB.push_back(particle.momentum.z);
 
-                event.pseudorapidity_B.push_back(std::atanh(particle.momentum.z / particle.momentum.mag()));
+                event.pseudorapidity_B.push_back(std::atanh(particle.momentum.z / particle.momentum.Mag()));
             }
             break;
         }

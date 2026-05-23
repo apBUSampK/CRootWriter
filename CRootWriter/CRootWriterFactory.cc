@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -18,31 +18,38 @@
 * along with CRoot.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#define DEFAULT_BUFFER_SIZE 10000
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <unordered_map>
+enum { kDefaultBufferSize = 10000 };
 
-#include "COLA.hh"
-
-#include "CRootWriter.hh"
-#include "CRootWriterFactory.hh"
-
-#include "CUniGenWriter.hh"
-#include "CNativeRootWriter.hh"
 #include "CAAMCCWriter.hh"
+#include "CNativeRootWriter.hh"
+#include "COLA.hh"
+#include "CRootWriterFactory.hh"
+#include "CUniGenWriter.hh"
 
-cola::VFilter *CRootWriterFactory::create(const std::map<std::string, std::string> & paramMap) {
-    size_t bufferSize = DEFAULT_BUFFER_SIZE;
-    bool writeCoord = false;
-    std::string format = "COLANative";
-    if (paramMap.find("buff_size") != paramMap.end())
-        bufferSize = std::stoi(paramMap.at("buff_size"));
-    if (paramMap.find("write_coord") != paramMap.end())
-        writeCoord = std::stoi(paramMap.at("write_coord"));
-    if (paramMap.find("format") != paramMap.end())
-        format = paramMap.at("format");
-    if (format == "UniGen")
-        return new CUniGenWriter(paramMap.at("file_name"), bufferSize, writeCoord);
-    if (format == "AAMCC")
-        return new CAAMCCWriter(paramMap.at("file_name"), bufferSize, writeCoord);
-    else
-        return new CNativeRootWriter(paramMap.at("file_name"), bufferSize, writeCoord);
+using namespace cola;
+
+std::unique_ptr<VFilter> CRootWriterFactory::Create(const std::unordered_map<std::string, std::string>& param_map) {
+  size_t buffer_size = kDefaultBufferSize;
+  bool write_coord = false;
+  std::string format = "COLANative";
+  if (param_map.find("buff_size") != param_map.end()) {
+    buffer_size = std::stoi(param_map.at("buff_size"));
+  }
+  if (param_map.find("write_coord") != param_map.end()) {
+    write_coord = (std::stoi(param_map.at("write_coord")) != 0);
+  }
+  if (param_map.find("format") != param_map.end()) {
+    format = param_map.at("format");
+  }
+  if (format == "UniGen") {
+    return std::make_unique<CUniGenWriter>(param_map.at("file_name"), buffer_size, write_coord);
+  }
+  if (format == "AAMCC") {
+    return std::make_unique<CAAMCCWriter>(param_map.at("file_name"), buffer_size, write_coord);
+  }
+  return std::make_unique<CNativeRootWriter>(param_map.at("file_name"), buffer_size, write_coord);
 }

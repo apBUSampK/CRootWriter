@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -20,6 +20,8 @@
 
 #include "CNativeRootWriter.hh"
 
+using namespace cola;
+
 CNativeRootWriter::CNativeRootWriter(const std::string &fName, const size_t buffSize, bool writeCoord) : CRootWriter(fName, buffSize),
     eventData() {
         outputTreeMap.emplace("ColaNative", new TTree("ColaNative", "ColaNative"));
@@ -36,7 +38,7 @@ CNativeRootWriter::CNativeRootWriter(const std::string &fName, const size_t buff
         }
     }
 
-void CNativeRootWriter::write_event(std::unique_ptr<cola::EventData>&& data) {
+void CNativeRootWriter::write_event(std::unique_ptr<EventData>&& data) {
     eventData = std::move(*data);
     outputTree->Fill();
 }

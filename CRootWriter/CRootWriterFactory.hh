@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -23,10 +23,18 @@
 
 #include "COLA.hh"
 
-class CRootWriterFactory final: public cola::VFactory {
-public:
-    cola::VFilter* create(const std::map<std::string, std::string>&) final;
-};
+namespace cola {
+
+    class CRootWriterFactory final: public VWriterFactory {
+    public:
+     std::unique_ptr<VFilter> Create(const std::unordered_map<std::string, std::string>& /*param_map*/) final;
+
+     const std::string& GetFilterName() const override {
+       static const std::string name{"G4DeexcitationHandler"};
+       return name;
+            }
+    };
+} // namespace cola
 
 #endif //CROOT_CUNIGENFACTORY_HH
 

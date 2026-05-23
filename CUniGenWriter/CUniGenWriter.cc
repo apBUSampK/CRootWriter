@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -19,6 +19,8 @@
 */
 
 #include "CUniGenWriter.hh"
+
+using namespace cola;
 
 CUniGenWriter::CUniGenWriter(const std::string &fName, const size_t buffSize, bool writeCoord) : CRootWriter(fName, buffSize), curEvent(std::make_unique<UEvent>()),
  run(std::make_unique<URun>()), _writeCoord(writeCoord), _runFilled(false) {
@@ -48,38 +50,38 @@ CUniGenWriter::CUniGenWriter(const std::string &fName, const size_t buffSize, bo
     }
 }
 
-void CUniGenWriter::write_event(std::unique_ptr<cola::EventData> && data) {
+void CUniGenWriter::write_event(std::unique_ptr<EventData> && data) {
    
-    const auto& iniState = data->iniState;
+    const auto& ini_state = data->ini_state;
     const auto& particles = data->particles;
     int childPlug[2]{-1, -1}; // currently no decay info in COLA, plug is needed
 
     // fill run data (only once)
     if (not _runFilled) {
-        auto nuclA = cola::pdgToAZ(iniState.pdgCodeA);
-        auto nuclB = cola::pdgToAZ(iniState.pdgCodeB);
+        auto nuclA = PdgToAZ(ini_state.pdg_code_a);
+        auto nuclB = PdgToAZ(ini_state.pdg_code_b);
 
         run = std::make_unique<URun>("", "COLA output, -1 fields mean no info in DO",
-                   nuclA.first, nuclA.second, iniState.pZA,
-                   nuclB.first, nuclB.second, iniState.pZB,
+                   nuclA.first, nuclA.second, ini_state.pz_a,
+                   nuclB.first, nuclB.second, ini_state.pz_b,
                    -1, -1, -1, -1, -1, -1, -1);
 
         run->Write("run");
         _runFilled = true;
     }
 
-    curEvent->SetParameters(static_cast<Int_t>(count), iniState.b, -1, -1, -1, -1);
+    curEvent->SetParameters(static_cast<Int_t>(count), ini_state.b, -1, -1, -1, -1);
 
     // Add particles
     int i = 0;
     for (const auto particle: particles)
         if (_writeCoord)
-            curEvent->AddParticle(i++, particle.pdgCode, static_cast<int>(particle.pClass), -1, -1, -1, -1, childPlug,
+            curEvent->AddParticle(i++, particle.pdg_code, static_cast<int>(particle.p_class), -1, -1, -1, -1, childPlug,
                               particle.momentum.x, particle.momentum.y, particle.momentum.z, particle.momentum.e,
                               particle.position.x, particle.position.y, particle.position.z, particle.position.t,
                               -1);
         else
-            curEvent->AddParticle(i++, particle.pdgCode, static_cast<int>(particle.pClass), -1, -1, -1, -1, childPlug, -1, -1, -1 ,-1, -1, -1, -1, -1, -1);
+            curEvent->AddParticle(i++, particle.pdg_code, static_cast<int>(particle.p_class), -1, -1, -1, -1, childPlug, -1, -1, -1 ,-1, -1, -1, -1, -1, -1);
 
     outputTree->Fill();
     

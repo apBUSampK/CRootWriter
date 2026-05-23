@@ -22,63 +22,63 @@
 #include "TNamed.h"
 #include "TString.h"
 
+#include <utility>
 
 class URun : public TNamed {
 
  private:
-  TString    fGenerator;     // Generator description
-  TString    fComment;       // Run comment
-  TString    fDecayer;       // Decayer description
-  Int_t      fAProj;         // Projectile mass number
-  Int_t      fZProj;         // Projectile charge
-  Double32_t fPProj;         // Projectile momentum per nucleon (GeV)
-  Int_t      fATarg;         // Target mass number
-  Int_t      fZTarg;         // Target charge
-  Double32_t fPTarg;         // Target momentum per nucleon (GeV)
-  Double32_t fBMin;          // Minimum impact parameter
-  Double32_t fBMax;          // Maximum impact parameter
-  Int_t      fBWeight;       // Impact parameter weighting
-                             // 0 for geometrical weights (bdb)
-                             // 1 for flat distribution
-  Double32_t fPhiMin;        // Event plane minimum angle (rad)
-  Double32_t fPhiMax;        // Event plane maximum angle (rad)
-  Double32_t fSigma;         // Cross-section (mb)
-  Int_t      fNEvents;       // Requested number of events
+  TString f_generator_;   // Generator description
+  TString f_comment_;     // Run comment
+  TString f_decayer_;     // Decayer description
+  Int_t f_a_proj_;        // Projectile mass number
+  Int_t f_z_proj_;        // Projectile charge
+  Double32_t f_p_proj_;   // Projectile momentum per nucleon (GeV)
+  Int_t f_a_targ_;        // Target mass number
+  Int_t f_z_targ_;        // Target charge
+  Double32_t f_p_targ_;   // Target momentum per nucleon (GeV)
+  Double32_t f_b_min_;    // Minimum impact parameter
+  Double32_t f_b_max_;    // Maximum impact parameter
+  Int_t f_b_weight_;      // Impact parameter weighting
+                          // 0 for geometrical weights (bdb)
+                          // 1 for flat distribution
+  Double32_t f_phi_min_;  // Event plane minimum angle (rad)
+  Double32_t f_phi_max_;  // Event plane maximum angle (rad)
+  Double32_t f_sigma_;    // Cross-section (mb)
+  Int_t f_n_events_;      // Requested number of events
 
  public:
   URun();
-  URun(const char* generator, const char* comment, Int_t aProj,
-       Int_t zProj, Double_t pProj, Int_t aTarg, Int_t zTarg,
-       Double_t pTarg, Double_t bMin, Double_t bMax, Int_t bWeight,
-       Double_t phiMin, Double_t phiMax, Double_t sigma, Int_t nEvents);
-  virtual ~URun();
-  void Print(Option_t* option = "") const;
-  void GetGenerator(TString& generator) {generator = fGenerator;}
-  void GetComment(TString& comment)     {comment = fComment;}
-  void GetDecayer(TString& decayer)     {decayer = fDecayer;}
-  inline Int_t       GetAProj()   const {return fAProj;}
-  inline Int_t       GetZProj()   const {return fZProj;}
-  inline Double_t    GetPProj()   const {return fPProj;}
-  inline Int_t       GetATarg()   const {return fATarg;}
-  inline Int_t       GetZTarg()   const {return fZTarg;}
-  inline Double_t    GetPTarg()   const {return fPTarg;}
-  inline Double_t    GetBMin()    const {return fBMin;}
-  inline Double_t    GetBMax()    const {return fBMax;}
-  inline Int_t       GetBWeight() const {return fBWeight;}
-  inline Double_t    GetPhiMax()  const {return fPhiMax;}
-  inline Double_t    GetPhiMin()  const {return fPhiMin;}
-  inline Double_t    GetSigma()   const {return fSigma;}
-  inline Int_t       GetNEvents() const {return fNEvents;}
+  URun(const char* generator, const char* comment, Int_t a_proj, Int_t z_proj, Double_t p_proj, Int_t a_targ,
+       Int_t z_targ, Double_t p_targ, Double_t b_min, Double_t b_max, Int_t b_weight, Double_t phi_min,
+       Double_t phi_max, Double_t sigma, Int_t n_events);
+  ~URun() override;
+  void Print(Option_t* option = "") const override;
+  void GetGenerator(TString& generator) { generator = f_generator_; }
+  void GetComment(TString& comment) { comment = f_comment_; }
+  void GetDecayer(TString& decayer) { decayer = f_decayer_; }
+  Int_t GetAProj() const { return f_a_proj_; }
+  Int_t GetZProj() const { return f_z_proj_; }
+  Double_t GetPProj() const { return f_p_proj_; }
+  Int_t GetATarg() const { return f_a_targ_; }
+  Int_t GetZTarg() const { return f_z_targ_; }
+  Double_t GetPTarg() const { return f_p_targ_; }
+  Double_t GetBMin() const { return f_b_min_; }
+  Double_t GetBMax() const { return f_b_max_; }
+  Int_t GetBWeight() const { return f_b_weight_; }
+  Double_t GetPhiMax() const { return f_phi_max_; }
+  Double_t GetPhiMin() const { return f_phi_min_; }
+  Double_t GetSigma() const { return f_sigma_; }
+  Int_t GetNEvents() const { return f_n_events_; }
   Double_t    GetSqrtS();
   Double_t    GetNNSqrtS();
   Double_t    GetProjectileEnergy();
   Double_t    GetTargetEnergy();
   Double_t    GetBetaCM();
   Double_t    GetGammaCM();
-  inline void SetNEvents(Int_t nEvents)   {fNEvents=nEvents;}
-  inline void SetPProj  (Double_t pProj)  {fPProj=pProj;}
-  inline void SetPTarg  (Double_t pTarg)  {fPTarg=pTarg;}
-  inline void SetDecayer(TString decayer) {fDecayer=decayer;}
+  void SetNEvents(Int_t n_events) { f_n_events_ = n_events; }
+  void SetPProj(Double_t p_proj) { f_p_proj_ = p_proj; }
+  void SetPTarg(Double_t p_targ) { f_p_targ_ = p_targ; }
+  void SetDecayer(TString decayer) { f_decayer_ = std::move(decayer); }
 
   ClassDef(URun,1);
 };

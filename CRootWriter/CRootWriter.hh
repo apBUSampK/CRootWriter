@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -30,28 +30,32 @@
 #include "TTree.h"
 #include "TFile.h"
 
-class CRootWriter: public cola::VWriter {
-private:
-    std::unique_ptr<TFile> outputFile;
-    const size_t buffSize;
+namespace cola {
 
-protected:
-    std::map<std::string, TTree*> outputTreeMap;
-    size_t count;
+    class CRootWriter: public VWriter {
+    private:
+        std::unique_ptr<TFile> outputFile;
+        const size_t buffSize;
 
-    virtual void write_event(std::unique_ptr<cola::EventData>&&) = 0;
+    protected:
+        std::map<std::string, TTree*> outputTreeMap;
+        size_t count;
 
-public:
-    CRootWriter() = delete;
-    CRootWriter(const std::string& fName, size_t buffSize);
+        virtual void write_event(std::unique_ptr<EventData>&&) = 0;
 
-    CRootWriter(const CRootWriter&) = delete;
-    CRootWriter(CRootWriter&&) = delete;
-    CRootWriter& operator=(const CRootWriter&) = delete;
-    CRootWriter& operator=(CRootWriter&&) = delete;
-    
-    ~CRootWriter() override;
+    public:
+        CRootWriter() = delete;
+        CRootWriter(const std::string& fName, size_t buffSize);
 
-    void operator()(std::unique_ptr<cola::EventData>&&) final;
-};
+        CRootWriter(const CRootWriter&) = delete;
+        CRootWriter(CRootWriter&&) = delete;
+        CRootWriter& operator=(const CRootWriter&) = delete;
+        CRootWriter& operator=(CRootWriter&&) = delete;
+        
+        ~CRootWriter() override;
+
+        void operator()(std::unique_ptr<EventData>&&) final;
+    };
+} // namespace cola
+
 #endif //CROOT_CROOTWRITER_HH

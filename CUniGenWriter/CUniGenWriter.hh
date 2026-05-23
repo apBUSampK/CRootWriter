@@ -1,6 +1,6 @@
 /**
 * CRoot - COLA Library Module for ROOT data storage support.
-* Copyright (C) 2025 Savva Savenkov
+* Copyright (C) 2025-2026 Savva Savenkov
 *
 * This file is part of CRoot
 *
@@ -34,24 +34,28 @@
 #include "TTree.h"
 #include "TFile.h"
 
-class CUniGenWriter final: public CRootWriter {
-private:
-    std::unique_ptr<UEvent> curEvent;
-    std::unique_ptr<URun> run;
-    bool _writeCoord;
+namespace cola {
 
-    bool _runFilled;
-    TTree* outputTree;                      // only view to single map element
+    class CUniGenWriter final: public CRootWriter {
+    private:
+        std::unique_ptr<UEvent> curEvent;
+        std::unique_ptr<URun> run;
+        bool _writeCoord;
 
-    void write_event(std::unique_ptr<cola::EventData>&&) final;
+        bool _runFilled;
+        TTree* outputTree;                      // only view to single map element
 
-public:
-    CUniGenWriter() = delete;
-    CUniGenWriter(const CUniGenWriter&) = delete;
-    CUniGenWriter(CUniGenWriter&&) = delete;
-    CUniGenWriter& operator=(const CUniGenWriter&) = delete;
-    CUniGenWriter& operator=(CUniGenWriter&&) = delete;
-    CUniGenWriter(const std::string& fName, const size_t buffSize, bool writeCoord = false);
+        void write_event(std::unique_ptr<EventData>&&) final;
 
-};
+    public:
+        CUniGenWriter() = delete;
+        CUniGenWriter(const CUniGenWriter&) = delete;
+        CUniGenWriter(CUniGenWriter&&) = delete;
+        CUniGenWriter& operator=(const CUniGenWriter&) = delete;
+        CUniGenWriter& operator=(CUniGenWriter&&) = delete;
+        CUniGenWriter(const std::string& fName, const size_t buffSize, bool writeCoord = false);
+
+    };
+} // namespace cola
+
 #endif //CROOT_CUNIGENWRITER_HH

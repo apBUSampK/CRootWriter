@@ -18,26 +18,6 @@
 * along with CRoot.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "CRootWriter.hh"
-#include "TFile.h"
+#include "CRootModule.hh"
 
-using namespace cola;
-
-CRootWriter::CRootWriter(const std::string &fName, const size_t buffSize) : outputFile(std::unique_ptr<TFile>(TFile::Open(fName.c_str(), "RECREATE"))),
-buffSize(buffSize), count(0) {}
-
-
-CRootWriter::~CRootWriter() {
-    for (auto&& tree : outputTreeMap)
-        tree.second->Write();
-    outputFile->Save();
-    outputFile->Close();
-}
-
-void CRootWriter::operator()(std::unique_ptr<EventData>&& data) {
-    write_event(std::move(data));
-    count++;
-    /*if (count % buffSize == 0)
-        for (auto&& tree : outputTreeMap)
-            tree.second->Write();*/
-}
+extern "C" cola::VModule* LoadCOLAModule() { return new cola::CRootModule(); }
