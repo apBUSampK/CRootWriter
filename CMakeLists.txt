@@ -32,7 +32,7 @@ include(CMakePackageConfigHelpers)
 
 
 set(CMAKE_INSTALL_PREFIX ${COLA_DIR})
-set(COLA_MODULE_NAME CRoot)
+set(COLA_MODULE_NAME CRootWriter)
 
 set(COLA_CMAKE_CXX_CLANG_TIDY
     ""
@@ -52,7 +52,7 @@ target_include_directories(CRootWriter PUBLIC
         "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/CUniGenWriter>"
         "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/CNativeRootWriter>"
         "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/CAAMCCWriter>"
-        "$<INSTALL_INTERFACE:include/${COLA_MODULE_NAME}>")
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${COLA_MODULE_NAME}>")
 
 set(CRootWriter_PUBLIC_HEADER "CRootWriter/CRootWriter.hh;CRootWriter/CRootWriterFactory.hh;\
 UniGen/include/UEvent.hh;UniGen/include/UParticle.hh;UniGen/include/URun.hh;CUniGenWriter/CUniGenWriter.hh;CNativeRootWriter/CNativeRootWriter.hh;\
@@ -76,7 +76,7 @@ target_link_libraries(CRootWriter PUBLIC COLA ROOT::RIO ${ROOT_LIBRARIES})
 configure_package_config_file(
         "${PROJECT_SOURCE_DIR}/cmake/${COLA_MODULE_NAME}Config.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/${COLA_MODULE_NAME}Config.cmake"
-        INSTALL_DESTINATION lib/cmake/${COLA_MODULE_NAME}
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${COLA_MODULE_NAME}
 )
 
 write_basic_package_version_file(
@@ -98,10 +98,6 @@ install(EXPORT CRootWriterExport
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${COLA_MODULE_NAME}Config.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/${COLA_MODULE_NAME}ConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${COLA_MODULE_NAME})
-
-#install .dat files for excitation energy calculation
-install(FILES ${PROJECT_SOURCE_DIR}/ExcitationEnergy/CorrectedALADINParameters.dat
-        DESTINATION data/${COLA_MODULE_NAME})
 
 # Install ROOT dicts for I/O
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lib${COLA_MODULE_NAME}_rdict.pcm"
